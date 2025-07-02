@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
+import org.example.expert.domain.todo.dto.response.TodoSearchResponse;
 import org.example.expert.domain.todo.service.TodoService;
 import org.example.expert.domain.user.entity.User;
 import org.springframework.data.domain.Page;
@@ -42,5 +43,17 @@ public class TodoController {
     @GetMapping("/todos/{todoId}")
     public ResponseEntity<TodoResponse> getTodo(@PathVariable long todoId) {
         return ResponseEntity.ok(todoService.getTodo(todoId));
+    }
+
+    @GetMapping("/todos/search")
+    public ResponseEntity<Page<TodoSearchResponse>> searchTodos(
+        @RequestParam(required = false) String keyword,
+        @RequestParam(required = false) LocalDate start,
+        @RequestParam(required = false) LocalDate end,
+        @RequestParam(required = false) String managerNickname,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(todoService.searchTodos(keyword, start, managerNickname, end, page, size));
     }
 }
