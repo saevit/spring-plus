@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.example.expert.client.WeatherClient;
 import org.example.expert.domain.common.exception.InvalidRequestException;
+import org.example.expert.domain.log.service.LogService;
 import org.example.expert.domain.todo.dto.request.TodoSaveRequest;
 import org.example.expert.domain.todo.dto.response.TodoResponse;
 import org.example.expert.domain.todo.dto.response.TodoSaveResponse;
@@ -27,6 +28,7 @@ public class TodoService {
 
     private final TodoRepository todoRepository;
     private final WeatherClient weatherClient;
+    private final LogService logService;
 
     @Transactional
     public TodoSaveResponse saveTodo(User user, TodoSaveRequest todoSaveRequest) {
@@ -39,6 +41,9 @@ public class TodoService {
                 user
         );
         Todo savedTodo = todoRepository.save(newTodo);
+
+        // 본인을 매니저로 자동 등록 로그 남기기
+        logService.saveManagerLog(savedTodo.getId(), user.getId());
 
         return new TodoSaveResponse(
                 savedTodo.getId(),
